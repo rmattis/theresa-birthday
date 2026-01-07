@@ -14,6 +14,7 @@ export interface MediaItem {
   caption?: string;
 }
 
+
 export type AlbumContent = Record<string, MediaItem[]>;
 
 export function useAlbumMedia() {
