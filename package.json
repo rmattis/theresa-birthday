@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generateMediaList.js",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-media": "node scripts/generateMediaList.js"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
