@@ -139,42 +139,31 @@ export default function Home() {
   );
 }
 
-// Floating doodles in background
+// Floating doodles in background - REDUCED for performance
 function FloatingDoodles() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {[...Array(12)].map((_, i) => (
-        <motion.div
+      {/* Reduced from 12 to 5 elements for better performance */}
+      {[...Array(5)].map((_, i) => (
+        <div
           key={i}
-          className="absolute"
+          className="absolute opacity-20"
           style={{
-            left: `${8 + i * 8}%`,
-            top: `${10 + ((i * 7) % 80)}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            rotate: [0, 15, -15, 0],
-            opacity: [0.1, 0.25, 0.1],
-          }}
-          transition={{
-            duration: 10 + i * 2,
-            repeat: Infinity,
-            delay: i * 0.3,
+            left: `${15 + i * 18}%`,
+            top: `${15 + ((i * 15) % 70)}%`,
           }}
         >
-          {i % 4 === 0 ? (
+          {i % 3 === 0 ? (
             <Heart className="w-6 h-6 text-red-300/40" fill="currentColor" />
-          ) : i % 4 === 1 ? (
+          ) : i % 3 === 1 ? (
             <Star
               className="w-5 h-5 text-vintage-gold/50"
               fill="currentColor"
             />
-          ) : i % 4 === 2 ? (
-            <Sparkles className="w-4 h-4 text-vintage-sepia/40" />
           ) : (
-            <span className="text-2xl opacity-30">✨</span>
+            <Sparkles className="w-4 h-4 text-vintage-sepia/40" />
           )}
-        </motion.div>
+        </div>
       ))}
     </div>
   );
@@ -513,7 +502,7 @@ function HorizontalScrollSection({
   );
 }
 
-// Instant Camera Section (Germany Hiking)
+// OPTIMIZED: Instant Camera Section (Germany Hiking) with progressive loading
 function InstantCameraSection({
   config,
   items,
@@ -523,6 +512,11 @@ function InstantCameraSection({
   items: MediaItemType[];
   bgColor: string;
 }) {
+  const INITIAL_LOAD = 12;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
+
   return (
     <section
       className={`py-24 px-4 md:px-8 ${bgColor} relative overflow-hidden`}
@@ -536,24 +530,24 @@ function InstantCameraSection({
 
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-          {items.map((item, i) => {
+          {visibleItems.map((item, i) => {
             const rotation = ((i * 7) % 12) - 6;
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 50, rotate: rotation * 2 }}
-                whileInView={{ opacity: 1, y: 0, rotate: rotation }}
-                whileHover={{ scale: 1.08, rotate: 0, zIndex: 20 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{ duration: 0.5, delay: (i % 6) * 0.08 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.3 }}
                 className="bg-white p-4 pb-16 shadow-xl cursor-pointer"
-                style={{ transformOrigin: "center bottom" }}
+                style={{ transform: `rotate(${rotation}deg)`, transformOrigin: "center bottom" }}
               >
                 <MediaItem
                   item={item}
                   index={i}
                   allItems={items}
                   aspectRatio="square"
+                  priority={i < 4}
                 />
                 <div className="absolute bottom-4 left-4 right-4 text-center">
                   <span className="font-vintage-hand text-vintage-dark/60 text-lg">
@@ -564,6 +558,20 @@ function InstantCameraSection({
             );
           })}
         </div>
+        
+        {/* Show More Button */}
+        {hasMore && (
+          <div className="text-center mt-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setVisibleCount(prev => prev + 12)}
+              className="px-8 py-3 bg-vintage-dark text-vintage-cream font-vintage-hand text-xl rounded-full shadow-lg hover:bg-vintage-sepia transition-colors"
+            >
+              Mehr Fotos ({items.length - visibleCount} übrig) 📷
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -643,7 +651,7 @@ function FilmStripSection({
   );
 }
 
-// Scrapbook Section (Hamburg)
+// OPTIMIZED: Scrapbook Section (Hamburg) with progressive loading
 function ScrapbookSection({
   config,
   items,
@@ -653,6 +661,11 @@ function ScrapbookSection({
   items: MediaItemType[];
   bgColor: string;
 }) {
+  const INITIAL_LOAD = 12;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
+  
   const tapeColors = [
     "tape",
     "tape tape-pink",
@@ -664,21 +677,9 @@ function ScrapbookSection({
     <section
       className={`py-24 px-4 md:px-8 ${bgColor} relative overflow-hidden`}
     >
-      {/* Doodle decorations */}
-      <motion.div
-        className="absolute top-20 left-10 text-4xl"
-        animate={{ rotate: [0, 10, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        🎭
-      </motion.div>
-      <motion.div
-        className="absolute top-40 right-16 text-3xl"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        ⚓
-      </motion.div>
+      {/* Static decorations - no animations for performance */}
+      <div className="absolute top-20 left-10 text-4xl opacity-30">🎭</div>
+      <div className="absolute top-40 right-16 text-3xl opacity-30">⚓</div>
 
       <SectionTitle
         title={config.title}
@@ -689,14 +690,13 @@ function ScrapbookSection({
 
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {items.map((item, i) => (
+          {visibleItems.map((item, i) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -8, rotate: 0, scale: 1.02 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.4, delay: (i % 6) * 0.05 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.3 }}
               style={{ rotate: `${i % 2 === 0 ? -2 : 2}deg` }}
               className={`bg-white p-2 shadow-lg ${
                 tapeColors[i % tapeColors.length]
@@ -707,16 +707,31 @@ function ScrapbookSection({
                 index={i}
                 allItems={items}
                 aspectRatio={i % 7 === 0 ? "square" : "portrait"}
+                priority={i < 4}
               />
             </motion.div>
           ))}
         </div>
+        
+        {/* Show More Button */}
+        {hasMore && (
+          <div className="text-center mt-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setVisibleCount(prev => prev + 12)}
+              className="px-8 py-3 bg-vintage-dark text-vintage-cream font-vintage-hand text-xl rounded-full shadow-lg hover:bg-vintage-sepia transition-colors"
+            >
+              Mehr Fotos ({items.length - visibleCount} übrig) 📸
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-// FIXED: Masonry Section - shows ALL images (Switzerland)
+// OPTIMIZED: Masonry Section with progressive loading (Switzerland)
 function MasonrySection({
   config,
   items,
@@ -726,6 +741,13 @@ function MasonrySection({
   items: MediaItemType[];
   bgColor: string;
 }) {
+  const INITIAL_LOAD = 16; // Load first 16 images
+  const LOAD_MORE_COUNT = 12; // Load 12 more at a time
+  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
+  
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
+  
   return (
     <section
       className={`py-24 px-4 md:px-8 ${bgColor} relative overflow-hidden`}
@@ -737,9 +759,6 @@ function MasonrySection({
       <div className="absolute bottom-1/4 left-8 text-6xl opacity-10 pointer-events-none">
         ⛰️
       </div>
-      <div className="absolute top-1/2 left-1/3 text-4xl opacity-10 pointer-events-none">
-        🌲
-      </div>
 
       <SectionTitle
         title={config.title}
@@ -750,14 +769,13 @@ function MasonrySection({
       <div className="max-w-7xl mx-auto">
         {/* Masonry grid using CSS columns */}
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {items.map((item, i) => (
+          {visibleItems.map((item, i) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.03, zIndex: 10 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{ duration: 0.4 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.3 }}
               className="break-inside-avoid bg-white p-2 shadow-lg mb-4"
             >
               <MediaItem
@@ -767,6 +785,7 @@ function MasonrySection({
                 aspectRatio={
                   i % 3 === 0 ? "portrait" : i % 3 === 1 ? "square" : "video"
                 }
+                priority={i < 4}
               />
               {item.caption && (
                 <p className="font-vintage-hand text-center text-vintage-dark/60 text-sm mt-2 py-1">
@@ -776,12 +795,26 @@ function MasonrySection({
             </motion.div>
           ))}
         </div>
+        
+        {/* Show More Button */}
+        {hasMore && (
+          <div className="text-center mt-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setVisibleCount(prev => prev + LOAD_MORE_COUNT)}
+              className="px-8 py-3 bg-vintage-dark text-vintage-cream font-vintage-hand text-xl rounded-full shadow-lg hover:bg-vintage-sepia transition-colors"
+            >
+              Mehr Fotos laden ({items.length - visibleCount} übrig) 📸
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
-// Beach Vibes Section (Egypt)
+// OPTIMIZED: Beach Vibes Section (Egypt) with progressive loading
 function BeachVibesSection({
   config,
   items,
@@ -791,27 +824,20 @@ function BeachVibesSection({
   items: MediaItemType[];
   bgColor: string;
 }) {
+  const INITIAL_LOAD = 12;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
+
   return (
     <section
       className={`py-24 px-4 md:px-8 ${bgColor} relative overflow-hidden`}
     >
-      {/* Beach decorations */}
-      <motion.div
-        className="absolute top-16 left-8 text-5xl"
-        animate={{ rotate: [-5, 5, -5] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        🌴
-      </motion.div>
-      <motion.div
-        className="absolute top-24 right-16 text-4xl"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        ☀️
-      </motion.div>
-      <div className="absolute bottom-32 left-1/4 text-3xl opacity-60">🐚</div>
-      <div className="absolute bottom-20 right-1/4 text-2xl opacity-50">🦀</div>
+      {/* Static decorations - no animations for performance */}
+      <div className="absolute top-16 left-8 text-5xl opacity-40">🌴</div>
+      <div className="absolute top-24 right-16 text-4xl opacity-40">☀️</div>
+      <div className="absolute bottom-32 left-1/4 text-3xl opacity-30">🐚</div>
+      <div className="absolute bottom-20 right-1/4 text-2xl opacity-30">🦀</div>
 
       <SectionTitle
         title={config.title}
@@ -821,36 +847,45 @@ function BeachVibesSection({
       />
 
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-wrap justify-center gap-5 md:gap-8">
-          {items.map((item, i) => {
-            const rotation = Math.sin(i * 1.3) * 10;
-            const yOffset = Math.cos(i * 1.7) * 15;
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+          {visibleItems.map((item, i) => {
+            const rotation = (i % 5) * 3 - 6; // Simpler rotation calculation
 
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                whileInView={{ opacity: 1, scale: 1, y: yOffset }}
-                whileHover={{ scale: 1.12, rotate: 0, zIndex: 30, y: -10 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  delay: (i % 8) * 0.05,
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.3 }}
                 style={{ rotate: `${rotation}deg` }}
-                className="w-36 md:w-48 bg-white p-2 shadow-xl cursor-pointer"
+                className="bg-white p-2 shadow-xl cursor-pointer"
               >
                 <MediaItem
                   item={item}
                   index={i}
                   allItems={items}
                   aspectRatio="square"
+                  priority={i < 4}
                 />
               </motion.div>
             );
           })}
         </div>
+        
+        {/* Show More Button */}
+        {hasMore && (
+          <div className="text-center mt-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setVisibleCount(prev => prev + 12)}
+              className="px-8 py-3 bg-vintage-dark text-vintage-cream font-vintage-hand text-xl rounded-full shadow-lg hover:bg-vintage-sepia transition-colors"
+            >
+              Mehr Fotos ({items.length - visibleCount} übrig) ☀️
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -926,7 +961,7 @@ function PolaroidScatterSection({
   );
 }
 
-// Photo Wall Section (Everyday Moments)
+// OPTIMIZED: Photo Wall Section (Everyday Moments) with progressive loading
 function PhotoWallSection({
   config,
   items,
@@ -936,6 +971,10 @@ function PhotoWallSection({
   items: MediaItemType[];
   bgColor: string;
 }) {
+  const INITIAL_LOAD = 15;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
+  const visibleItems = items.slice(0, visibleCount);
+  const hasMore = visibleCount < items.length;
   const pins = ["📌", "📍", "💕", "⭐", "💜"];
 
   return (
@@ -951,22 +990,14 @@ function PhotoWallSection({
         {/* Cork board style background */}
         <div className="bg-[#c4a574]/30 rounded-lg p-6 md:p-10 border-4 border-[#8b6914]/20 shadow-inner">
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-            {items.map((item, i) => (
+            {visibleItems.map((item, i) => (
               <motion.div
                 key={item.id}
-                initial={{
-                  opacity: 0,
-                  rotate: i % 2 === 0 ? -12 : 12,
-                  scale: 0.8,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  rotate: i % 2 === 0 ? -4 : 4,
-                  scale: 1,
-                }}
-                whileHover={{ scale: 1.15, rotate: 0, zIndex: 20 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.02, type: "spring" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.3 }}
+                style={{ transform: `rotate(${i % 2 === 0 ? -4 : 4}deg)` }}
                 className="relative bg-white p-2 shadow-md cursor-pointer"
               >
                 {/* Pin */}
@@ -978,10 +1009,25 @@ function PhotoWallSection({
                   index={i}
                   allItems={items}
                   aspectRatio="square"
+                  priority={i < 4}
                 />
               </motion.div>
             ))}
           </div>
+          
+          {/* Show More Button */}
+          {hasMore && (
+            <div className="text-center mt-8">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setVisibleCount(prev => prev + 12)}
+                className="px-8 py-3 bg-vintage-dark text-vintage-cream font-vintage-hand text-xl rounded-full shadow-lg hover:bg-vintage-sepia transition-colors"
+              >
+                Mehr Momente ({items.length - visibleCount} übrig) 💕
+              </motion.button>
+            </div>
+          )}
         </div>
       </div>
     </section>

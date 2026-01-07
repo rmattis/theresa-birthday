@@ -41,7 +41,7 @@ export function useAlbumMedia() {
         return {
           id: filename,
           filename,
-          src: `/album/${folder}/${filename}`,
+          src: `/album-optimized/${folder}/${filename}`,
           type,
           caption: albumConfig.captions[filename] || undefined,
         };
