@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Vintage Color Palette */
+  --color-vintage-cream: oklch(96% 0.02 80);
+  --color-vintage-dark: oklch(25% 0.02 60);
+  --color-vintage-sepia: oklch(55% 0.08 65);
+  --color-vintage-gold: oklch(75% 0.12 85);
+  --color-vintage-accent: oklch(45% 0.10 30);
+  --color-vintage-pink: oklch(80% 0.08 10);
+  --color-vintage-blue: oklch(70% 0.06 240);
+  
+  /* Fonts */
+  --font-vintage-title: var(--font-playfair), 'Playfair Display', serif;
+  --font-vintage-hand: var(--font-caveat), 'Caveat', cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: var(--color-vintage-cream);
+  --foreground: var(--color-vintage-dark);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-vintage-cream);
+  color: var(--color-vintage-dark);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Film Grain Effect */
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom selection color */
+::selection {
+  background-color: oklch(75% 0.12 85 / 0.3);
+}
+
+/* Sketchy hand-drawn border effect */
+.sketchy-border {
+  border: 3px solid var(--color-vintage-dark);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+}
+
+/* Tape effect */
+.tape {
+  position: relative;
+}
+.tape::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 60px;
+  height: 25px;
+  background: linear-gradient(135deg, rgba(255,235,180,0.9) 0%, rgba(255,220,150,0.8) 100%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* Washi tape colors */
+.tape-pink::before {
+  background: linear-gradient(135deg, rgba(255,182,193,0.85) 0%, rgba(255,150,170,0.75) 100%);
+}
+.tape-blue::before {
+  background: linear-gradient(135deg, rgba(173,216,230,0.85) 0%, rgba(135,190,220,0.75) 100%);
+}
+.tape-green::before {
+  background: linear-gradient(135deg, rgba(144,238,144,0.85) 0%, rgba(100,200,100,0.75) 100%);
+}
+
+/* Paper texture */
+.paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* Wobbly animation */
+@keyframes wobble {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+.wobble {
+  animation: wobble 3s ease-in-out infinite;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-0.5deg); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Squiggle underline */
+.squiggle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 12'%3E%3Cpath d='M0 8 Q 12.5 2, 25 8 T 50 8 T 75 8 T 100 8' stroke='%23d4a574' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 50px 8px;
+  padding-bottom: 12px;
+}
+
+/* Polaroid shadow */
+.polaroid-shadow {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Scattered rotation classes */
+.rotate-scatter-1 { transform: rotate(-5deg); }
+.rotate-scatter-2 { transform: rotate(3deg); }
+.rotate-scatter-3 { transform: rotate(-2deg); }
+.rotate-scatter-4 { transform: rotate(6deg); }
+.rotate-scatter-5 { transform: rotate(-4deg); }
+
+/* Film strip holes */
+.film-hole {
+  width: 12px;
+  height: 8px;
+  background: rgba(0,0,0,0.8);
+  border-radius: 2px;
+}
+
+/* Doodle hearts */
+.doodle-heart {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e88a8a'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Star doodle */
+.doodle-star {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffd700'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
 }
